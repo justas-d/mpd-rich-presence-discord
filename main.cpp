@@ -187,44 +187,4 @@ int main()
         }
         queryMpdAndUpdateDiscordWrapped(conn);
     }
-    
-
-    mpd_song_t* song = mpd_recv_song(conn);
-    
-    printf(mpd_song_get_tag(song, MPD_TAG_TITLE, 0));
-    
-    
-    return 0;
-    
-    
-    while(1)
-    {
-    
-    }
-    
-    Discord_Shutdown();
-    
-    
-    //mpd_status_t* status = mpd_recv_status(conn);
-    
-    /*
-    if (mpd_status_get_state(status) == MPD_STATE_PLAY ||
-        mpd_status_get_state(status) == MPD_STATE_PAUSE) {
-        if (!mpd_response_next(conn))
-            printErrorAndExit(conn);
-        
-        struct mpd_song *song = mpd_recv_song(conn);
-        if (song != NULL) {
-            pretty_print_song(song);
-            printf("\n");
-            
-            mpd_song_free(song);
-        }
-        
-        my_finishCommand(conn);
-    }
-    
-    mpd_status_free(status);
-     */
-    return 0;
 }
