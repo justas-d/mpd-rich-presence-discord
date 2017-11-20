@@ -8,7 +8,14 @@ include_directories(
         /usr/include/mpd
         ${CMAKE_SOURCE_DIR}/lib/discord-rpc/build/include/)
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES
+        main.cpp
+        DiscordPresenceRpc.cpp
+        DiscordPresenceRpc.h
+        MpdClient.cpp
+        MpdClient.h
+        TrackInfo.h)
+
 add_executable(mpd_discord_richpresence ${SOURCE_FILES})
 
 target_link_libraries(
