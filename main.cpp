@@ -23,6 +23,7 @@
 typedef struct mpd_connection mpd_connection_t;
 typedef struct mpd_song mpd_song_t;
 typedef enum mpd_state mpd_state_t;
+typedef enum mpd_error mpd_error_t;
 typedef struct mpd_status mpd_status_t;
 
 static bool discordIsAlive = false;
@@ -193,11 +194,18 @@ static void queryMpdAndUpdateDiscordWrapped(mpd_connection_t* conn)
 mpd_connection_t* makeConnection()
 {
     mpd_connection_t* conn = mpd_connection_new("127.0.0.1", 6600, 0);
+    mpd_error_t err = mpd_connection_get_error(conn);
+    
+    if(err != MPD_ERROR_SUCCESS)
+    {
+        LOG(mpd_connection_get_error_message(conn));
+        std::exit(1);
+    }
     
     if(!conn)
     {
         LOG("failed connecting to mpd.");
-        return nullptr;
+        std::exit(1);
     }
     return conn;
 }
@@ -211,6 +219,7 @@ int main()
     {
         if(mpd_run_idle_mask(conn, MPD_IDLE_PLAYER) == 0)
         {
+            mpd_connection_free(conn);
             conn = makeConnection();
             LOG("restored mpd connection.");
         }
