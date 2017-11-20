@@ -8,11 +8,6 @@
 #include "MpdClient.h"
 #include "DiscordPresenceRpc.h"
 
-/*
- *  TODO : reconnect to mpd
- *  TODO : rate limiting
- */
-
 static void setAppSend(const char* app, DiscordRichPresence& payload, DiscordPresenceRpc& rpc)
 {
     rpc.setApp(app);
