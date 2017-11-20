@@ -12,49 +12,66 @@
 #include <sstream>
 #include <iostream>
 #include <client.h>
+
 /*
- *  TODO : pause support
  *  TODO : rate limiting
- *  TODO : killDiscord doesn't actually kill presence.
+ *  TODO : mpd_status_get_queue_length is not what we need
  */
+
+#define LOG(...) std::cout << __VA_ARGS__ << std::endl
 
 typedef struct mpd_connection mpd_connection_t;
 typedef struct mpd_song mpd_song_t;
 typedef enum mpd_state mpd_state_t;
 typedef struct mpd_status mpd_status_t;
 
-void updateState(uint64_t elapsedTime, const std::string& detail, const std::string& state)
+static bool discordIsAlive = false;
+constexpr static int MAX_CHARS = 128;
+
+struct mpd_share_state
 {
+    const char* application;
+    const char* track;
+    const char* artist;
+    int trackNumber;
+    int maxTrackNumbers;
+    uint64_t currentPlayTime;
     
-    printf("updating stats\n");
+    bool isPaused;
+};
+
+void updateState(mpd_share_state* state)
+{
+    Discord_Shutdown();
+    DiscordEventHandlers handlers {};
+    Discord_Initialize(state->application, &handlers, 1, 0);
     
     DiscordRichPresence discordPresence = {};
     
-    discordPresence.state = state.c_str();
-    discordPresence.details = detail.c_str();
+    discordPresence.state = state->artist;
+    discordPresence.details = state->track;
     
-    discordPresence.startTimestamp = time(0) - elapsedTime;
+    if(!state->isPaused)
+        discordPresence.startTimestamp = time(0) - state->currentPlayTime;
     
-    discordPresence.largeImageKey = "skeltal-big";
-    discordPresence.smallImageKey= "mpd-small2";
+    discordPresence.largeImageKey = "mpd_large";
     
-    discordPresence.partySize = 2;
-    discordPresence.partyMax = 3;
+    discordPresence.partySize = state->trackNumber;
+    discordPresence.partyMax = 54; //state->maxTrackNumbers;
 
     discordPresence.instance = 1;
     
     Discord_UpdatePresence(&discordPresence);
+    LOG("updated presence state");
 }
 
-
-constexpr static int MAX_CHARS = 128;
 #define RET_CLAMP_STRSTREAM(stream) \
-     auto str = stream.str(); \
+     auto str = (stream).str(); \
     if(str.size() > MAX_CHARS) \
         return str.substr(0, MAX_CHARS); \
     return str;
 
-std::string createDetail(mpd_song_t* song)
+std::string createTitle(mpd_song_t* song)
 {
     std::stringstream stream;
     
@@ -73,25 +90,7 @@ std::string createDetail(mpd_song_t* song)
     RET_CLAMP_STRSTREAM(stream)
 }
 
-
-static bool discordIsAlive = false;
-void startDiscord()
-{
-    
-    if(discordIsAlive ) return;
-    discordIsAlive = true;
-    DiscordEventHandlers handlers {};
-    Discord_Initialize("381948295830044683", &handlers, 1, 0);
-}
-
-void killDiscord()
-{
-    if(!discordIsAlive)return;
-    discordIsAlive = false;
-    Discord_Shutdown();
-}
-
-std::string createStatus(mpd_song_t* song)
+std::string createArtist(mpd_song_t* song)
 {
     std::stringstream stream;
     
@@ -101,58 +100,87 @@ std::string createStatus(mpd_song_t* song)
         stream << "by " << artist;
     if(album)
     {
-        if(artist) stream << " ,";
-        stream << album;
+        if(artist) stream << " (";
+        stream << "album: " << album;
+        if(artist) stream << ")";
     }
     
     RET_CLAMP_STRSTREAM(stream)
+}
+
+
+void killDiscord()
+{
+    if(!discordIsAlive)
+    {
+        LOG("Attempted to killDiscord with no live connection.");
+        return;
+    }
+    
+    discordIsAlive = false;
+    Discord_Shutdown();
+    // BUG : killDiscord doesn't actually kill presence.
+    
+    LOG("Killed discord.");
 }
 
 static bool queryMpdAndUpdateDiscord(mpd_connection_t* conn)
 {
     if(!mpd_send_status(conn))
     {
-        std::cout << "mpd status failed\n";
+        LOG("mpd_send_status failed.");
         return false;
     }
     
     mpd_status_t* status = mpd_recv_status(conn);
     if(!status)
     {
-        std::cout << "mpd status was null.\n";
+        LOG("mpd_recv_status returned null");
         return false;
     }
     
     mpd_state_t state = mpd_status_get_state(status);
+    
     if(state == MPD_STATE_STOP || state == MPD_STATE_UNKNOWN)
     {
-        std::cout << "Nothing is playing\n";
+        LOG("stopped playing");
         return false;
     }
-    
     
     uint64_t time = mpd_status_get_elapsed_time(status);
     mpd_status_free(status);
     
     if(!mpd_send_current_song(conn))
     {
-        std::cout << "failed sending current song\n";
+        LOG("mpd_send_current_song failed.");
         return false;
     }
     
     mpd_song_t* song = mpd_recv_song(conn);
     if(!song)
     {
-        std::cout << "failed to receive song.\n";
+        LOG("mpd_recv_song returned null.");
         return false;
     }
     
-    startDiscord();
-    updateState(time, createDetail(song), createStatus(song));
+    
+    std::string artist = createArtist(song);
+    std::string title = createTitle(song);
+    
+    bool isPaused = state == MPD_STATE_PAUSE;
+    mpd_share_state share = {};
+    share.application = (isPaused ? "381994109981687810" : "381948295830044683");
+    share.isPaused = isPaused;
+    share.artist = artist.c_str();
+    share.trackNumber = mpd_song_get_pos(song);
+    share.maxTrackNumbers =  mpd_status_get_queue_length(status);
+    share.track = title.c_str();
+    share.currentPlayTime = time;
+    
+    updateState(&share);
     
     mpd_song_free(song);
     
-    std::cout << "Updated presence";
     return true;
 }
 
@@ -168,7 +196,7 @@ mpd_connection_t* makeConnection()
     
     if(!conn)
     {
-        std::cout << "failed connecting to mpd.";
+        LOG("failed connecting to mpd.");
         return nullptr;
     }
     return conn;
@@ -184,6 +212,7 @@ int main()
         if(mpd_run_idle_mask(conn, MPD_IDLE_PLAYER) == 0)
         {
             conn = makeConnection();
+            LOG("restored mpd connection.");
         }
         queryMpdAndUpdateDiscordWrapped(conn);
     }
