@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <optional>
 
 #include "mpd/connection.h"
 #include "TrackInfo.h"
