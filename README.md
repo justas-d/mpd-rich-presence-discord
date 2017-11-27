@@ -28,3 +28,4 @@ For the lazy: run build.sh. It will pull discord-rpc, build it and then run cmak
 ## Similar
 
 * [foo_discord, NaamloosDT/](https://github.com/NaamloosDT/foo_discord) - foobar2000 rich presence
+* [discordify, Krognol](https://github.com/Krognol/discordify) - spotift rich presence
