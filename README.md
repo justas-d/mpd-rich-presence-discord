@@ -1,7 +1,7 @@
 # Rich presence support for MPD
 Broadcasts status of what you're listening to on MPD via Discord's rich presence.
 
-![exmaple](/images/tiny.png)
+![exmaple](/images/playing.png)
 ![exmaple](/images/idle.png)
 ![exmaple](/images/paused.png)
 ![newline](/images/mpd.png)

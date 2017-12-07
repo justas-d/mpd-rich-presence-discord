@@ -1,3 +1,6 @@
 .idea/
 *cmake-*
 lib/discord-rpc
+release/
+debug/
+build/
