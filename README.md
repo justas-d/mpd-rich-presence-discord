@@ -1,18 +1,19 @@
 # Rich presence support for MPD
 Broadcasts status of what you're listening to on MPD via Discord's rich presence.
 
-![exmaple](/images/playing.png)
-![exmaple](/images/idle.png)
-![exmaple](/images/paused.png)
+![example](/images/playing.png)
+![example](/images/idle.png)
+![example](/images/paused.png)
 ![newline](/images/mpd.png)
 
 ## Command line args
 
-Example: `mpd_discord_richpresence -h=211.111.111.112 -P=password -p=6606`
+Example: `mpd_discord_richpresence -h=211.111.111.112 -P=password -p=6606 --fork`
 
 * `-h=` - the address where the MPD server (defaults to `127.0.0.1`)
 * `-p=` - the port on which the target MPD server is listening  (defaults to `6600`)
 * `-P=` - the password to be sent after connection to the MPD server has been established in hopes of acquiring higher permissions. (default is empty, therfore no password sent.)
+* `--fork` - forks the process into the background.
 
 ## Compilation
 
