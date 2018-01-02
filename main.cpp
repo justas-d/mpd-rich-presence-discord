@@ -114,21 +114,31 @@ int main(int argc, char** args)
     auto pass = getPassword(vecArgs);
     auto port = getPort(vecArgs);
     
+    bool isForked = false;
     int pid;
-    if(std::find(vecArgs.begin(), vecArgs.end(), "--fork") != vecArgs.end()) {
-        if ((pid = fork()) != 0) {
+    if(std::find(vecArgs.begin(), vecArgs.end(), "--fork") != vecArgs.end())
+    {
+        pid = fork();
+        if (pid != 0)
+        {
             if (pid < 0)
+            {
+                std::cerr << "Failed to fork." << std::endl;
                 return -1;
-            else {
-                std::cout << "Forked. PID: " << pid;
+            }
+            else
+            {
+                std::cout << "Forked. PID: " << pid << std::endl;
                 return 0;
             }
         }
+        isForked = true;
     }
     
     DiscordPresenceRpc rpc;
     int count = 0;
-
+    const static int MaxExceptionsWhenForked = 10;
+    
     while(true)
     {
         try
@@ -146,8 +156,11 @@ int main(int argc, char** args)
         {
             sendIdle(rpc);
             std::cout << "Exception: " << e.what() << ". reconnecting to MPD in 5 seconds." << std::endl;
+    
+            if(isForked && count++ == MaxExceptionsWhenForked)
+                return -1;
+            
             std::this_thread::sleep_for(std::chrono::seconds(5));
-            if (count++ == 3) return -1;
         }
     }
 }
