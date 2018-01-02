@@ -1,11 +1,14 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include <algorithm>
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include <vector>
 #include "MpdClient.h"
+#include "unistd.h"
+// POSIX systems are the majority of systems both running and created so it's okay
 #include "DiscordPresenceRpc.h"
 
 static void setAppSend(const char* app, DiscordRichPresence& payload, DiscordPresenceRpc& rpc)
@@ -111,9 +114,21 @@ int main(int argc, char** args)
     auto pass = getPassword(vecArgs);
     auto port = getPort(vecArgs);
     
-    // TODO : fork to backgrounds
-    DiscordPresenceRpc rpc;
+    int pid;
+    if(std::find(vecArgs.begin(), vecArgs.end(), "--fork") != vecArgs.end()) {
+        if ((pid = fork()) != 0) {
+            if (pid < 0)
+                return -1;
+            else {
+                std::cout << "Forked. PID: " << pid;
+                return 0;
+            }
+        }
+    }
     
+    DiscordPresenceRpc rpc;
+    int count = 0;
+
     while(true)
     {
         try
@@ -132,6 +147,7 @@ int main(int argc, char** args)
             sendIdle(rpc);
             std::cout << "Exception: " << e.what() << ". reconnecting to MPD in 5 seconds." << std::endl;
             std::this_thread::sleep_for(std::chrono::seconds(5));
+            if (count++ == 3) return -1;
         }
     }
 }
