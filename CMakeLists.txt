@@ -4,9 +4,7 @@ project(mpd_discord_richpresence)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O2 -s -DNDEBUG")
 
-
 include_directories(
-        /usr/include/mpd
         ${CMAKE_SOURCE_DIR}/lib/discord-rpc/build/include/)
 
 set(SOURCE_FILES
@@ -22,5 +20,5 @@ add_executable(mpd_discord_richpresence ${SOURCE_FILES})
 target_link_libraries(
         mpd_discord_richpresence
         pthread
-        /usr/lib/libmpdclient.so
+        mpdclient
         ${CMAKE_SOURCE_DIR}/lib/discord-rpc/build/lib64/libdiscord-rpc.a)
