@@ -15,6 +15,8 @@ set(SOURCE_FILES
         MpdClient.h
         TrackInfo.h)
 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/mpd-discord.service
+        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 add_executable(mpd_discord_richpresence ${SOURCE_FILES})
 
 target_link_libraries(
