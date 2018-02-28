@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "lib/discord-rpc/include/discord-rpc.h"
+#include "lib/discord-rpc/include/discord_rpc.h"
 
 class DiscordPresenceRpc
 {
