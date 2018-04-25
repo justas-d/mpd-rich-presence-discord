@@ -1,12 +1,12 @@
 # Rich presence support for MPD
 Broadcasts status of what you're listening to on MPD via Discord's rich presence.
 
-[example](/images/playing.png)
-[example](/images/playing_big.png)
-[example](/images/playing_big2.png)
-[example](/images/idle.png)
-[example](/images/paused.png)
-[newline](/images/playing_tiny.png)
+![example](/images/playing.png)
+![example2](/images/playing_big.png)
+![example3](/images/playing_big2.png)
+![example4](/images/idle.png)
+![example5](/images/paused.png)
+![newline6](/images/playing_tiny.png)
 
 ## Command line args
 
