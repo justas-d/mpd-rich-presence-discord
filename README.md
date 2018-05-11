@@ -24,9 +24,10 @@ Example: `mpd_discord_richpresence -h=211.111.111.112 -P=password -p=6606 --fork
 * [discord-rpc](https://github.com/discordapp/discord-rpc)
 * libmpdclient
 
-General consensus is that you'll want to link against discord-rpc, libmpdclient and pthread.
+A [build script](build.sh) is included.
 
-For the lazy: run build.sh. It will pull discord-rpc, build it and then run cmake to build and link mpd rich presence.
+The CMakeFile will take care of finding discord-rpc. If it cannot find it, it will pull the discordrpc github repo and compile from source.
+
 
 ## Similar
 
