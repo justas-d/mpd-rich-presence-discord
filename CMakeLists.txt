@@ -17,7 +17,7 @@ if(NOT DISCORD_RPC_LIB OR NOT DISCORD_RPC_H)
 
     # pull submodules
     execute_process(
-        COMMAND "git submodule update --init --recursive"
+        COMMAND git submodule update --init --recursive
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
     set(BUILD_EXAMPLES OFF CACHE BOOL "build examples")
