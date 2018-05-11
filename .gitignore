@@ -4,3 +4,4 @@ lib/discord-rpc
 release/
 debug/
 build/
+thirdparty/
