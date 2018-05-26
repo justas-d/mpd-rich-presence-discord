@@ -4,7 +4,7 @@ Requires=mpd.service
 After=mpd.service
 
 [Service]
-ExecStart=/usr/local/bin/mpd_discord_richpresence
+ExecStart=/usr/bin/mpd_discord_richpresence
 
 [Install]
 WantedBy=multi-user.target
