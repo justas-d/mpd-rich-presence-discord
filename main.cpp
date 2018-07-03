@@ -66,10 +66,28 @@ void updatePresence(MpdClient& mpd, DiscordPresenceRpc& rpc)
         }
         case MpdClient::Idle:
         {
-            sendIdle(rpc);
+            if(rpc.shouldBroadcastIdle()) {
+                sendIdle(rpc);
+            }
+            else
+                rpc.shutdown();
+
             break;
         }
     }
+}
+
+bool isFlagSet(const std::vector<std::string>& args, const std::string& flag)
+{
+    for(const auto& arg : args)
+    {
+        auto start = arg.find(flag);
+        if(start == std::string::npos)
+            continue;
+
+        return true;
+    }
+    return false;
 }
 
 std::string getParam(const std::vector<std::string>& args, const std::string& param)
@@ -84,6 +102,11 @@ std::string getParam(const std::vector<std::string>& args, const std::string& pa
     }
     
     return {};
+}
+
+bool shouldBroadcastIdle(const std::vector<std::string>& args)
+{
+    return !isFlagSet(args, "--no-idle");
 }
 
 std::string getHostname(const std::vector<std::string>& args)
@@ -135,7 +158,8 @@ int main(int argc, char** args)
         isForked = true;
     }
     
-    DiscordPresenceRpc rpc;
+    DiscordPresenceRpc rpc(shouldBroadcastIdle(vecArgs));
+
     int count = 0;
     const static int MaxExceptionsWhenForked = 10;
     

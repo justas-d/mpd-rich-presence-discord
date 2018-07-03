@@ -1,8 +1,12 @@
 #include "DiscordPresenceRpc.h"
 
-DiscordPresenceRpc::~DiscordPresenceRpc()
+void DiscordPresenceRpc::shutdown() 
 {
     Discord_Shutdown();
+}
+DiscordPresenceRpc::~DiscordPresenceRpc()
+{
+    shutdown();
 }
 
 void DiscordPresenceRpc::setApp(const char* app)
