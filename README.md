@@ -10,12 +10,15 @@ Broadcasts status of what you're listening to on MPD via Discord's rich presence
 
 ## Command line args
 
-Example: `mpd_discord_richpresence -h=211.111.111.112 -P=password -p=6606 --fork`
+Example: `mpd_discord_richpresence -h=211.111.111.112 -P=password -p=6606 --fork --no-idle`
 
-* `-h=` - the address where the MPD server (defaults to `127.0.0.1`)
-* `-p=` - the port on which the target MPD server is listening  (defaults to `6600`)
-* `-P=` - the password to be sent after connection to the MPD server has been established in hopes of acquiring higher permissions. (default is empty, therfore no password sent.)
-* `--fork` - forks the process into the background.
+| Paramater| Purpose  |
+|--|--|
+|`-h=ADDDRESS`|  the address where the MPD server (defaults to `127.0.0.1`)|
+|`-p=PORT`|the port on which the target MPD server is listening  (defaults to `6600`)|
+|`-P=PASSWORD`|the password to be sent after connection to the MPD server has been established in hopes of acquiring higher permissions. (default is empty, therfore no password sent.)|
+|`--fork`|forks the process into the background.|
+|`--no-idle`|Disables broadcasting of the idle state.|
 
 ## Compilation
 
