@@ -188,7 +188,27 @@ std::string getPassword(const std::vector<std::string>& args)
 
 int main(int argc, char** args)
 {
+
     auto vecArgs = std::vector<std::string>(args+1, args+argc);
+
+
+    if(isFlagSet(vecArgs, "--help") || isFlagSet(vecArgs, "-help") || isFlagSet(vecArgs, "help"))
+    {
+#define LINE(what) std::cout << what << std::endl
+        LINE("MPD Rich Presence for Discord");
+        LINE("https://github.com/SSStormy/mpd-rich-presence-discord/");
+        LINE("");
+        LINE("Arguments:");
+        LINE("  -h=ADDDRESS             the address where the MPD server (defaults to 127.0.0.1)");
+        LINE("  -p=PORT                 the port on which the target MPD server is listening (defaults to 6600)");
+        LINE("  -P=PASSWORD             the password to be sent after connection to the MPD server has been established in hopes of acquiring higher permissions. (default is empty, therfore no password sent.)");
+        LINE("  --fork                  forks the process into the background.");
+        LINE("  --no-idle               Disables broadcasting of the idle state.");
+        LINE("  --use-multiple-apps     Uses the Multi App mode.");
+#undef LINE
+        return 0;
+    }
+
     auto host = getHostname(vecArgs);
     auto pass = getPassword(vecArgs);
     auto port = getPort(vecArgs);
