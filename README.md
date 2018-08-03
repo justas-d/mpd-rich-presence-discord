@@ -34,5 +34,6 @@ The CMakeFile will take care of finding discord-rpc. If it cannot find it, it wi
 
 ## Similar
 
+* [mpv-discordRPC, noaione](https://github.com/noaione/mpv-discordRPC) - MPV
 * [foo_discord, NaamloosDT/](https://github.com/NaamloosDT/foo_discord) - foobar2000 rich presence
-* [discordify, Krognol](https://github.com/Krognol/discordify) - spotift rich presence
+

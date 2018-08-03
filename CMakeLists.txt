@@ -31,12 +31,9 @@ if(NOT DISCORD_RPC_LIB OR NOT DISCORD_RPC_H)
 endif()
 
 set(SOURCE_FILES
-    main.cpp
-    DiscordPresenceRpc.cpp
-    DiscordPresenceRpc.h
-    MpdClient.cpp
-    MpdClient.h
-    TrackInfo.h)
+    src/main.cpp
+    src/MpdClient.cpp
+    src/MpdClient.h)
 
 # copy systemd .service to binary dir
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/mpd-discord.service

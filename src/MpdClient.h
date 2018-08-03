@@ -1,11 +1,19 @@
 #pragma once
 
 #include <string>
-
 #include "mpd/connection.h"
-#include "TrackInfo.h"
 
 typedef struct mpd_connection mpd_connection_t;
+
+struct TrackInfo
+{
+    std::string Artist;
+    uint64_t PlayTimeSeconds;
+    
+    std::string TrackName;
+    int TrackNumber;
+    int TotalTracks;
+};
 
 class MpdClient
 {
