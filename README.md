@@ -14,7 +14,7 @@
 <hr>
 
 <p align="center">
-  AUR:
+  <b>AUR:</b>
   <a href="https://aur.archlinux.org/packages/mpd-rich-presence-discord-git/" target="_blank">
     <img src="http://badge.kloud51.com/aur/v/mpd-rich-presence-discord-git.svg" alt="AUR Version"/>
   </a>
@@ -62,20 +62,19 @@
 ## Multi App vs Single App Mode
 * Single App Mode
 
-  * This mode will use one sindle MPD app. The three different MPD states (Playing, paused and idle) will be displayed via this app.
-  
-  * This mode syncs faster than the multi app mode.
+  * This mode will only use a single MPD app, which will diplay the three different MPD states. (Playing, Paused and Idle)
+  * This mode syncs faster than the multi-app mode.
   
 * Multi App Mode
 
-  * This mode will use multiple different MPD apps: 
+  * This mode will use multiple, unique MPD apps: 
     * `MPD (Playing)`
     * `MPD (Paused)`
-    * `MPD` (reserved for idle)
+    * `MPD` (Reserved for idle)
   
   * These app names will show up next to your name on the sidebar.
   
-  * This mode syncs slower than the single app mode.
+  * This mode updates slower than the single app mode.
 
 ---
 
@@ -85,12 +84,12 @@ Example: `mpd_discord_richpresence -h=211.111.111.112 -P=password -p=6606 --fork
 
 | Paramater| Purpose  |
 |--|--|
-|`-h=ADDDRESS`|  the address where the MPD server (defaults to `127.0.0.1`)|
-|`-p=PORT`|the port on which the target MPD server is listening  (defaults to `6600`)|
-|`-P=PASSWORD`|the password to be sent after connection to the MPD server has been established in hopes of acquiring higher permissions. (default is empty, therfore no password sent.)|
-|`--fork`|forks the process into the background.|
+|`-h=ADDDRESS`|The listen-address for MPD. (Defaults to `127.0.0.1`)|
+|`-p=PORT`|The port which MPD is listening on. (Defaults to `6600`)|
+|`-P=PASSWORD`|The password sent to MPD after the connection has been established successfully. (Default is empty, therefore no password sent.)|
+|`--fork`|Forks the process into the background.|
 |`--no-idle`|Disables broadcasting of the idle state.|
-|`--use-multiple-apps`| Uses the Multi App mode.|
+|`--use-multiple-apps`|Uses the Multi-App mode.|
 
 ---
 
@@ -103,7 +102,7 @@ Example: `mpd_discord_richpresence -h=211.111.111.112 -P=password -p=6606 --fork
 
 A [build script](build.sh) is included.
 
-The CMakeFile will take care of finding discord-rpc. If it cannot find it, it will pull the discordrpc github repo and compile from source.
+The CMakeFile will take care of finding discord-rpc. If it cannot find it, it will pull the discord-rpc GitHub repo and compile from source.
 
 ---
 
