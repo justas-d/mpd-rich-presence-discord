@@ -92,6 +92,8 @@ Example: `mpd_discord_richpresence -h=211.111.111.112 -P=password -p=6606 --fork
 |`--no-idle`|Disables broadcasting of the idle state.|
 |`--use-multiple-apps`|Uses the Multi-App mode.|
 
+> ⚠️ discord-rpc [will not work](https://github.com/discordapp/discord-rpc/issues/213#issuecomment-410631101) if Discord has been installed through snap (Ubuntu Software). Please download and install Discord from the [homepage](https://discordapp.com/).
+
 ---
 
 ## Compiling
