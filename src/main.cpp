@@ -19,6 +19,7 @@ static const char* AppIdMulti = "474605546457137157";
 struct AppState
 {
     bool BroadcastIdle;
+    bool BroadcastPaused;
     bool UseMultipleApps;
     uint64_t PrevAppIdHash = 0;
 };
@@ -40,7 +41,7 @@ uint64_t FNVHash(const char* str, uint64_t hash = 14695981039346656037UL)
     return hash;
 }
 
-PresencePayload makePresence(const AppState& app, const TrackInfo* track, bool isPaused) 
+PresencePayload makePresence(const AppState& app, const TrackInfo* track, bool isPaused)
 {
     PresencePayload payload;
     memset(&payload, 0, sizeof(payload));
@@ -50,21 +51,21 @@ PresencePayload makePresence(const AppState& app, const TrackInfo* track, bool i
     rp.largeImageKey = "mpd_large";
     rp.largeImageText = "Music Player Daemon";
 
-    if(track) 
+    if(track)
     {
         rp.state = track->Artist.c_str();
         rp.details = track->TrackName.c_str();
         rp.partySize = track->TrackNumber;
         rp.partyMax = track->TotalTracks;
 
-        if(isPaused) 
+        if(isPaused)
         {
             rp.smallImageKey = "pause-circle_png";
             rp.smallImageText = "Paused";
 
             if(app.UseMultipleApps)
                 payload.AppId = AppIdPaused;
-        } 
+        }
         else
         {
             rp.startTimestamp = time(0) - track->PlayTimeSeconds;
@@ -74,13 +75,13 @@ PresencePayload makePresence(const AppState& app, const TrackInfo* track, bool i
             if(app.UseMultipleApps)
                 payload.AppId = AppIdPlaying;
         }
-    } 
-    else 
+    }
+    else
     {
         rp.state = "Idle";
         rp.smallImageKey = "refresh-cw_png";
         rp.smallImageText = "Zzz...";
-   
+
         if(app.UseMultipleApps)
             payload.AppId = AppIdIdle;
     }
@@ -102,14 +103,20 @@ void updatePresence(MpdClient& mpd, TrackInfo* trackBuffer, AppState& app)
         {
             p = makePresence(app, nullptr, true);
         }
-        else 
+        else
         {
             app.PrevAppIdHash = 0;
             Discord_Shutdown();
             return;
         }
     }
-    else if(state == MpdClient::Playing || state == MpdClient::Paused) 
+    else if(state == MpdClient::Paused && !app.BroadcastPaused)
+    {
+        app.PrevAppIdHash = 0;
+        Discord_Shutdown();
+        return;
+    }
+    else if(state == MpdClient::Playing || state == MpdClient::Paused)
     {
         *trackBuffer = mpd.getCurrentTrack();
         p = makePresence(app, trackBuffer, state == MpdClient::Paused);
@@ -148,10 +155,10 @@ std::string getParam(const std::vector<std::string>& args, const std::string& pa
         auto start = arg.find(param);
         if(start == std::string::npos)
             continue;
-        
+
         return arg.substr(start + param.size() + 1);
     }
-    
+
     return {};
 }
 
@@ -199,12 +206,13 @@ int main(int argc, char** args)
         LINE("https://github.com/SSStormy/mpd-rich-presence-discord/");
         LINE("");
         LINE("Arguments:");
-        LINE("  -h=ADDDRESS             the address where the MPD server (defaults to 127.0.0.1)");
-        LINE("  -p=PORT                 the port on which the target MPD server is listening (defaults to 6600)");
-        LINE("  -P=PASSWORD             the password to be sent after connection to the MPD server has been established in hopes of acquiring higher permissions. (default is empty, therfore no password sent.)");
-        LINE("  --fork                  forks the process into the background.");
-        LINE("  --no-idle               Disables broadcasting of the idle state.");
-        LINE("  --use-multiple-apps     Uses the Multi App mode.");
+        LINE("  -h=ADDDRESS                         the address where the MPD server (defaults to 127.0.0.1)");
+        LINE("  -p=PORT                             the port on which the target MPD server is listening (defaults to 6600)");
+        LINE("  -P=PASSWORD                         the password to be sent after connection to the MPD server has been established in hopes of acquiring higher permissions. (default is empty, therfore no password sent.)");
+        LINE("  --fork                              forks the process into the background.");
+        LINE("  --no-idle                           Disables broadcasting of the idle state.");
+        LINE("  --dont-broadcast-the-paused-state   Disables broadcasting of the paused state.");
+        LINE("  --use-multiple-apps                 Uses the Multi App mode.");
 #undef LINE
         return 0;
     }
@@ -215,8 +223,9 @@ int main(int argc, char** args)
 
     AppState state = {};
     state.BroadcastIdle     = !isFlagSet(vecArgs, "--no-idle");
+    state.BroadcastPaused   = !isFlagSet(vecArgs, "--dont-broadcast-the-paused-state");
     state.UseMultipleApps   = isFlagSet(vecArgs, "--use-multiple-apps");
-    
+
     // forking
     auto isForked = false;
     {
@@ -241,10 +250,10 @@ int main(int argc, char** args)
             isForked = true;
         }
     }
-        
+
     int errCount = 0;
     const static int MaxExceptionsWhenForked = 10;
-    
+
     while(true)
     {
         try
@@ -271,10 +280,10 @@ int main(int argc, char** args)
             Discord_Shutdown();
 
             std::cout << "Exception: " << e.what() << ". reconnecting to MPD in 5 seconds." << std::endl;
-    
+
             if(isForked && errCount++ == MaxExceptionsWhenForked)
                 return -1;
-            
+
             std::this_thread::sleep_for(std::chrono::seconds(5));
         }
     }
