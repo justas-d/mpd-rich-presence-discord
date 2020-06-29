@@ -152,6 +152,10 @@ std::string getParam(const std::vector<std::string>& args, const std::string& pa
 {
     for(const auto& arg : args)
     {
+		// Make sure the arg and the parameters are the same
+		if(arg != param)
+			continue;
+
         auto start = arg.find(param);
         if(start == std::string::npos)
             continue;
@@ -206,13 +210,13 @@ int main(int argc, char** args)
         LINE("https://github.com/SSStormy/mpd-rich-presence-discord/");
         LINE("");
         LINE("Arguments:");
-        LINE("  -h=ADDDRESS                         the address where the MPD server (defaults to 127.0.0.1)");
-        LINE("  -p=PORT                             the port on which the target MPD server is listening (defaults to 6600)");
-        LINE("  -P=PASSWORD                         the password to be sent after connection to the MPD server has been established in hopes of acquiring higher permissions. (default is empty, therfore no password sent.)");
-        LINE("  --fork                              forks the process into the background.");
-        LINE("  --no-idle                           Disables broadcasting of the idle state.");
-        LINE("  --dont-broadcast-the-paused-state   Disables broadcasting of the paused state.");
-        LINE("  --use-multiple-apps                 Uses the Multi App mode.");
+        LINE("  -h=ADDDRESS			the address where the MPD server (defaults to 127.0.0.1)");
+        LINE("  -p=PORT             the port on which the target MPD server is listening (defaults to 6600)");
+        LINE("  -P=PASSWORD     the password to be sent after connection to the MPD server has been established in hopes of acquiring higher permissions. (default is empty, therfore no password sent.)");
+        LINE("  --fork                  forks the process into the background.");
+        LINE("  --no-idle               Disables broadcasting of the idle state.");
+        LINE("  --no-pause              Disables broadcasting of the paused state.");
+        LINE("  --use-multiple-apps     Uses the Multi App mode.");
 #undef LINE
         return 0;
     }
@@ -223,7 +227,7 @@ int main(int argc, char** args)
 
     AppState state = {};
     state.BroadcastIdle     = !isFlagSet(vecArgs, "--no-idle");
-    state.BroadcastPaused   = !isFlagSet(vecArgs, "--dont-broadcast-the-paused-state");
+    state.BroadcastPaused   = !isFlagSet(vecArgs, "--no-pause");
     state.UseMultipleApps   = isFlagSet(vecArgs, "--use-multiple-apps");
 
     // forking
