@@ -143,6 +143,9 @@ bool isFlagSet(const std::vector<std::string>& args, const std::string& flag)
         if(start == std::string::npos)
             continue;
 
+        if(start != 0) 
+            continue;
+
         return true;
     }
     return false;
@@ -154,6 +157,9 @@ std::string getParam(const std::vector<std::string>& args, const std::string& pa
     {
         auto start = arg.find(param);
         if(start == std::string::npos)
+            continue;
+
+        if(start != 0) 
             continue;
 
         return arg.substr(start + param.size() + 1);
