@@ -132,6 +132,10 @@ std::string createArtist(mpd_song_t* song)
     RET_CLAMP_STRSTREAM(stream);
 }
 
+std::string extractFileName(const std::string& fullPath)
+{
+  return fullPath.substr(fullPath.find_last_of("/\\") + 1);
+}
 
 TrackInfo MpdClient::getCurrentTrack()
 {
@@ -150,7 +154,7 @@ TrackInfo MpdClient::getCurrentTrack()
     t.TrackNumber = mpd_status_get_song_pos(mpdStatus) + 1;
     t.PlayTimeSeconds = mpd_status_get_elapsed_time(mpdStatus);
     t.Artist = createArtist(mpdCurrentSong);
-    t.TrackName = createTitle(mpdCurrentSong);
+    t.TrackName = extractFileName(createTitle(mpdCurrentSong));
     
     mpd_song_free(mpdCurrentSong);
     mpd_status_free(mpdStatus);
