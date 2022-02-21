@@ -284,6 +284,12 @@ int main(int argc, char** args)
         catch(const std::runtime_error& e)
         {
             Discord_Shutdown();
+            // For #14
+            // when this catch block is reached, Discord_Shutdown() is called,
+            // however in the next iteration, the program won't try to connect to Discord,
+            // because updatePresence() only reconnects when the app id hashes don't match,
+            // hence this hack
+            state.PrevAppIdHash = 0;
 
             std::cout << "Exception: " << e.what() << ". reconnecting to MPD in 5 seconds." << std::endl;
 
